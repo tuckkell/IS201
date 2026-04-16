@@ -1,0 +1,218 @@
+/* =========================================================
+   custom.css — Tucker Kelleher Travel Page (from-scratch)
+   No Bootstrap — all original CSS
+   ========================================================= */
+
+/* ---- 1. BODY & GLOBAL ---- */
+body {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  background-color: #ddeef6;
+  color: #1e2d3d;
+  margin: 0;
+  padding: 0;
+  line-height: 1.75;
+}
+
+/* ---- 2. HEADINGS ---- */
+h1, h2, h3, h4 {
+  font-family: 'Arial', 'Helvetica Neue', Helvetica, sans-serif;
+  color: #0a2342;
+  margin-top: 0;
+}
+
+h1 { font-size: 2.6rem; margin-bottom: 0.3rem; }
+h2 { font-size: 1.9rem; border-bottom: 3px solid #0a2342; padding-bottom: 8px; margin-bottom: 20px; }
+h3 { font-size: 1.4rem; color: #1a4a7a; margin-bottom: 10px; }
+h4 { font-size: 1.1rem; color: #1a4a7a; }
+
+/* ---- 3. NAVIGATION DIV ---- */
+#nav-div {
+  background-color: #0a2342;
+  padding: 14px 30px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+}
+
+#nav-div .site-name {
+  font-family: 'Arial', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #ffffff;
+  text-decoration: none;
+  letter-spacing: 0.5px;
+}
+
+#nav-div nav a {
+  font-family: 'Arial', Helvetica, sans-serif;
+  color: #cfe0f5;
+  text-decoration: none;
+  margin-left: 22px;
+  font-size: 0.97rem;
+  transition: color 0.2s;
+}
+
+#nav-div nav a:hover {
+  color: #ffffff;
+  text-decoration: underline;
+}
+
+/* ---- 4. PAGE HERO ---- */
+#hero-div {
+  background: linear-gradient(120deg, #0a2342 0%, #1a6b9a 100%);
+  color: #ffffff;
+  text-align: center;
+  padding: 70px 30px 55px;
+}
+
+#hero-div h1 { color: #ffffff; font-size: 3rem; }
+#hero-div p  { font-size: 1.2rem; opacity: 0.9; max-width: 650px; margin: 0 auto; }
+
+/* ---- 5. ANCHOR JUMP LINKS ---- */
+#jump-links {
+  text-align: center;
+  background-color: #c8e0ee;
+  padding: 14px 20px;
+  border-bottom: 2px solid #a2c8de;
+}
+
+#jump-links a {
+  font-family: 'Arial', sans-serif;
+  font-size: 0.97rem;
+  font-weight: 600;
+  color: #0a2342;
+  text-decoration: none;
+  margin: 0 14px;
+  transition: color 0.2s;
+}
+
+#jump-links a:hover { color: #1a6b9a; text-decoration: underline; }
+
+/* ---- 6. MAIN CONTENT WRAPPER ---- */
+#main-div {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 40px 24px 60px;
+}
+
+/* ---- 7. DESTINATION SECTIONS ---- */
+.section-div {
+  background-color: #ffffff;
+  border-radius: 10px;
+  padding: 30px 32px;
+  margin-bottom: 40px;
+  box-shadow: 0 3px 14px rgba(0,0,0,0.09);
+}
+
+.section-div img {
+  width: 100%;
+  border-radius: 8px;
+  margin-bottom: 22px;
+  max-height: 320px;
+  object-fit: cover;
+}
+
+/* ---- 8. LISTS ---- */
+ol {
+  font-size: 1.05rem;
+  padding-left: 22px;
+  color: #1e2d3d;
+}
+
+ol li { margin-bottom: 10px; }
+
+ul {
+  font-size: 0.97rem;
+  padding-left: 20px;
+  color: #2c4260;
+  line-height: 1.8;
+}
+
+ul li { margin-bottom: 4px; }
+
+/* ---- 9. VIDEO DIV ---- */
+#video-div {
+  background-color: #c0dced;
+  border-radius: 10px;
+  padding: 30px 24px;
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+#video-div h2 { border-bottom-color: #1a6b9a; }
+
+#video-div iframe {
+  width: 100%;
+  max-width: 720px;
+  height: 406px;
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+}
+
+/* ---- 10. TABLEAU DIV ---- */
+#tableau-div {
+  background-color: #ffffff;
+  border-radius: 10px;
+  padding: 30px 24px;
+  margin-bottom: 40px;
+  box-shadow: 0 3px 14px rgba(0,0,0,0.09);
+  text-align: center;
+}
+
+/* ---- 11. FOOTER DIV ---- */
+#footer-div {
+  background-color: #0a2342;
+  color: #cfe0f5;
+  text-align: center;
+  padding: 28px 20px;
+  font-family: 'Arial', sans-serif;
+  font-size: 0.92rem;
+}
+
+#footer-div a {
+  color: #9ecbf0;
+  text-decoration: none;
+}
+
+#footer-div a:hover { text-decoration: underline; color: #ffffff; }
+
+/* ---- 12. DESTINATION BADGE ---- */
+.dest-badge {
+  display: inline-block;
+  background-color: #0a2342;
+  color: #ffffff;
+  font-family: 'Arial', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border-radius: 4px;
+  padding: 3px 10px;
+  margin-bottom: 10px;
+}
+
+/* ---- 13. BACK TO TOP LINK ---- */
+.back-to-top {
+  display: inline-block;
+  font-family: 'Arial', sans-serif;
+  font-size: 0.88rem;
+  color: #1a6b9a;
+  text-decoration: none;
+  margin-top: 16px;
+}
+
+.back-to-top:hover { text-decoration: underline; color: #0a2342; }
+
+/* ---- 14. RESPONSIVE ---- */
+@media (max-width: 600px) {
+  #hero-div h1 { font-size: 2rem; }
+  #video-div iframe { height: 220px; }
+  #nav-div { flex-direction: column; gap: 10px; }
+  #nav-div nav a { margin-left: 10px; }
+}
