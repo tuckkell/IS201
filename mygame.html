@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Travel Trivia Quiz | Tucker Kelleher</title>
+  <style>
+    /* ============================================================
+       All CSS in this file (single-page AI web app)
+       ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #0a2342 0%, #1a6b9a 50%, #0e4a6e 100%);
+      min-height: 100vh;
+      color: #1e2d3d;
+    }
+
+    /* ---- NAV ---- */
+    nav {
+      background-color: rgba(10, 35, 66, 0.95);
+      padding: 12px 30px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      backdrop-filter: blur(4px);
+    }
+    nav .brand { color: #fff; font-weight: 700; font-size: 1.15rem; text-decoration: none; }
+    nav .nav-links a {
+      color: #cfe0f5;
+      text-decoration: none;
+      margin-left: 20px;
+      font-size: 0.93rem;
+      transition: color 0.2s;
+    }
+    nav .nav-links a:hover { color: #fff; }
+
+    /* ---- PAGE WRAPPER ---- */
+    .page-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 40px 16px 60px;
+    }
+
+    /* ---- QUIZ CARD ---- */
+    .quiz-card {
+      background: #ffffff;
+      border-radius: 18px;
+      box-shadow: 0 12px 50px rgba(0,0,0,0.35);
+      max-width: 680px;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    /* ---- QUIZ HEADER ---- */
+    .quiz-header {
+      background: linear-gradient(135deg, #0a2342 0%, #1a4a7a 100%);
+      color: white;
+      text-align: center;
+      padding: 36px 30px 28px;
+    }
+    .quiz-header .globe-icon { font-size: 3rem; display: block; margin-bottom: 10px; }
+    .quiz-header h1 { font-size: 1.85rem; font-weight: 700; margin-bottom: 6px; }
+    .quiz-header p  { font-size: 1rem; opacity: 0.85; }
+
+    /* ---- PROGRESS BAR ---- */
+    .progress-bar-wrapper {
+      background: #e2eaf2;
+      height: 8px;
+    }
+    .progress-bar-fill {
+      height: 8px;
+      background: linear-gradient(90deg, #0a2342, #1a6b9a);
+      transition: width 0.4s ease;
+      width: 0%;
+    }
+
+    /* ---- QUIZ BODY ---- */
+    .quiz-body { padding: 34px 36px; }
+
+    /* Status bar */
+    .status-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 22px;
+      font-size: 0.88rem;
+      color: #6c8199;
+      font-weight: 600;
+    }
+    .score-display { color: #0a2342; }
+
+    /* Question */
+    .question-num {
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #1a6b9a;
+      margin-bottom: 8px;
+    }
+    .question-text {
+      font-size: 1.22rem;
+      font-weight: 700;
+      color: #0a2342;
+      line-height: 1.5;
+      margin-bottom: 26px;
+    }
+
+    /* Answer buttons */
+    .answers-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+    .answer-btn {
+      background: #f0f5fb;
+      border: 2px solid #c8daea;
+      border-radius: 10px;
+      padding: 14px 12px;
+      font-size: 0.97rem;
+      font-weight: 500;
+      color: #1e2d3d;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.18s;
+      line-height: 1.4;
+    }
+    .answer-btn:hover:not(:disabled) {
+      background: #ddeef8;
+      border-color: #1a6b9a;
+      color: #0a2342;
+    }
+    .answer-btn.correct {
+      background: #d4edda;
+      border-color: #28a745;
+      color: #145a23;
+    }
+    .answer-btn.incorrect {
+      background: #f8d7da;
+      border-color: #dc3545;
+      color: #7b1a22;
+    }
+    .answer-btn:disabled { cursor: default; }
+
+    /* Feedback */
+    .feedback-box {
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-size: 0.96rem;
+      line-height: 1.55;
+      margin-bottom: 22px;
+      display: none;
+    }
+    .feedback-box.correct  { background: #d4edda; color: #145a23; border-left: 4px solid #28a745; }
+    .feedback-box.incorrect { background: #f8d7da; color: #7b1a22; border-left: 4px solid #dc3545; }
+    .feedback-box.show { display: block; }
+
+    /* Next / Restart buttons */
+    .btn-next {
+      display: none;
+      width: 100%;
+      background: linear-gradient(135deg, #0a2342 0%, #1a4a7a 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 15px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .btn-next:hover { opacity: 0.88; }
+    .btn-next.show  { display: block; }
+
+    /* ---- START SCREEN ---- */
+    #start-screen {
+      padding: 40px 36px;
+      text-align: center;
+    }
+    #start-screen .globe { font-size: 4rem; }
+    #start-screen h2 { font-size: 1.6rem; color: #0a2342; margin: 16px 0 10px; }
+    #start-screen p  { color: #4a6280; font-size: 1rem; margin-bottom: 28px; line-height: 1.6; }
+    .rules-list {
+      text-align: left;
+      background: #f0f5fb;
+      border-radius: 10px;
+      padding: 18px 22px;
+      margin-bottom: 28px;
+      color: #2c4260;
+      font-size: 0.95rem;
+      line-height: 1.9;
+    }
+    .btn-start {
+      background: linear-gradient(135deg, #0a2342 0%, #1a4a7a 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 16px 48px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s;
+      letter-spacing: 0.3px;
+    }
+    .btn-start:hover { opacity: 0.88; }
+
+    /* ---- RESULTS SCREEN ---- */
+    #results-screen {
+      padding: 40px 36px;
+      text-align: center;
+      display: none;
+    }
+    .results-icon { font-size: 4rem; margin-bottom: 14px; }
+    #results-screen h2 { font-size: 1.7rem; color: #0a2342; margin-bottom: 8px; }
+    .final-score {
+      font-size: 3.2rem;
+      font-weight: 700;
+      color: #1a6b9a;
+      margin: 14px 0;
+    }
+    .score-label { font-size: 1rem; color: #6c8199; margin-bottom: 10px; }
+    .grade-badge {
+      display: inline-block;
+      font-size: 1.15rem;
+      font-weight: 700;
+      padding: 8px 24px;
+      border-radius: 20px;
+      margin-bottom: 24px;
+    }
+    .grade-A { background: #d4edda; color: #145a23; }
+    .grade-B { background: #cce5ff; color: #004085; }
+    .grade-C { background: #fff3cd; color: #856404; }
+    .grade-D { background: #f8d7da; color: #7b1a22; }
+    .results-summary {
+      background: #f0f5fb;
+      border-radius: 10px;
+      padding: 18px;
+      margin-bottom: 26px;
+      font-size: 0.95rem;
+      color: #2c4260;
+      line-height: 1.7;
+    }
+    .btn-restart {
+      background: linear-gradient(135deg, #0a2342 0%, #1a4a7a 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 14px 38px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin: 6px;
+      transition: opacity 0.2s;
+    }
+    .btn-restart:hover { opacity: 0.88; }
+    .btn-home {
+      background: #e8f0f8;
+      color: #0a2342;
+      border: 2px solid #0a2342;
+      border-radius: 12px;
+      padding: 13px 36px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin: 6px;
+      text-decoration: none;
+      display: inline-block;
+      transition: background 0.2s;
+    }
+    .btn-home:hover { background: #cfe0f5; }
+
+    /* ---- RESPONSIVE ---- */
+    @media (max-width: 480px) {
+      .answers-grid { grid-template-columns: 1fr; }
+      .quiz-body    { padding: 24px 20px; }
+      #start-screen, #results-screen { padding: 28px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== NAVBAR ===== -->
+  <nav>
+    <a class="brand" href="index.html">Tucker Kelleher</a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="resume.html">Resume</a>
+      <a href="travel.html">Travel</a>
+      <a href="mygame.html">Travel Quiz</a>
+    </div>
+  </nav>
+
+  <div class="page-wrapper">
+    <div class="quiz-card">
+
+      <!-- Quiz Header (always visible) -->
+      <div class="quiz-header">
+        <span class="globe-icon">🌍</span>
+        <h1>Travel Trivia Quiz</h1>
+        <p>10 questions about world geography, landmarks &amp; destinations</p>
+      </div>
+
+      <!-- Progress bar -->
+      <div class="progress-bar-wrapper">
+        <div class="progress-bar-fill" id="progress-bar"></div>
+      </div>
+
+      <!-- ===== START SCREEN ===== -->
+      <div id="start-screen">
+        <div class="globe">✈️</div>
+        <h2>Ready to explore the world?</h2>
+        <p>This AI-assisted quiz will test your knowledge of landmarks, capitals, geography, and travel facts from around the globe. Answer 10 questions and see how you score!</p>
+        <div class="rules-list">
+          🗺️ &nbsp;10 multiple-choice travel questions<br>
+          ✅ &nbsp;Get instant feedback after each answer<br>
+          🏆 &nbsp;See your final score and ranking at the end<br>
+          🔄 &nbsp;Restart anytime to improve your score
+        </div>
+        <button class="btn-start" onclick="startQuiz()">Start the Quiz ✈️</button>
+      </div>
+
+      <!-- ===== QUIZ SCREEN ===== -->
+      <div class="quiz-body" id="quiz-screen" style="display: none;">
+        <div class="status-bar">
+          <span id="question-counter">Question 1 of 10</span>
+          <span class="score-display" id="score-counter">Score: 0</span>
+        </div>
+        <div class="question-num" id="question-num">Question 1</div>
+        <div class="question-text" id="question-text"></div>
+        <div class="answers-grid" id="answers-grid"></div>
+        <div class="feedback-box" id="feedback-box"></div>
+        <button class="btn-next" id="next-btn" onclick="nextQuestion()">Next Question →</button>
+      </div>
+
+      <!-- ===== RESULTS SCREEN ===== -->
+      <div id="results-screen">
+        <div class="results-icon" id="results-icon">🏆</div>
+        <h2>Quiz Complete!</h2>
+        <div class="final-score" id="final-score">0 / 10</div>
+        <div class="score-label">correct answers</div>
+        <div class="grade-badge" id="grade-badge"></div>
+        <div class="results-summary" id="results-summary"></div>
+        <div>
+          <button class="btn-restart" onclick="restartQuiz()">🔄 Play Again</button>
+          <a class="btn-home" href="travel.html">🗺️ Back to Travel</a>
+        </div>
+      </div>
+
+    </div><!-- /quiz-card -->
+  </div><!-- /page-wrapper -->
+
+  <!-- ===== JAVASCRIPT ===== -->
+  <script>
+    const questions = [
+      {
+        q: "What is the capital city of Australia?",
+        options: ["Sydney", "Melbourne", "Canberra", "Brisbane"],
+        answer: 2,
+        fact: "Canberra is Australia's capital! Many people guess Sydney or Melbourne, but Canberra was built specifically to serve as the capital — a compromise between the two rival cities."
+      },
+      {
+        q: "The Eiffel Tower is located in which city?",
+        options: ["Rome", "London", "Barcelona", "Paris"],
+        answer: 3,
+        fact: "The Eiffel Tower in Paris, France was built in 1889 for the World's Fair and stands 330 meters tall. It receives about 7 million visitors per year, making it one of the most visited monuments in the world."
+      },
+      {
+        q: "Which country has the most natural UNESCO World Heritage Sites?",
+        options: ["China", "Italy", "United States", "Brazil"],
+        answer: 0,
+        fact: "China leads the world with the most UNESCO World Heritage Sites overall, including the Great Wall, Forbidden City, and many stunning natural sites. Italy is a close competitor!"
+      },
+      {
+        q: "The Great Barrier Reef is located off the coast of which country?",
+        options: ["New Zealand", "Philippines", "Australia", "Indonesia"],
+        answer: 2,
+        fact: "The Great Barrier Reef off Queensland, Australia is the world's largest coral reef system — stretching over 2,300 km. It's so large it can be seen from outer space!"
+      },
+      {
+        q: "Which is the tallest mountain in the world?",
+        options: ["K2", "Mount Kilimanjaro", "Mount Everest", "Denali"],
+        answer: 2,
+        fact: "Mount Everest in the Himalayas (Nepal/Tibet border) stands at 8,848.86 meters (29,031.7 feet) — the highest point on Earth. About 4,000–5,000 people attempt to summit each year."
+      },
+      {
+        q: "What is the world's largest desert by area?",
+        options: ["Sahara Desert", "Arabian Desert", "Antarctic Desert", "Gobi Desert"],
+        answer: 2,
+        fact: "The Antarctic Desert is the world's largest at about 14.2 million km². The Sahara (9.2 million km²) is the largest HOT desert, but Antarctica — a polar desert — is even bigger!"
+      },
+      {
+        q: "The ancient city of Petra is located in which country?",
+        options: ["Egypt", "Jordan", "Israel", "Saudi Arabia"],
+        answer: 1,
+        fact: "Petra is Jordan's most famous archaeological site — a city carved directly into rose-red sandstone cliffs by the Nabataean people over 2,000 years ago. It's nicknamed the 'Rose City.'"
+      },
+      {
+        q: "How many countries does the Amazon River flow through?",
+        options: ["2", "3", "4", "9"],
+        answer: 3,
+        fact: "The Amazon River flows through 9 countries: Brazil, Peru, Colombia, Venezuela, Ecuador, Bolivia, Guyana, Suriname, and French Guiana — though 60% of it is in Brazil."
+      },
+      {
+        q: "Which country is home to the most natural freshwater lakes in the world?",
+        options: ["Russia", "United States", "Canada", "Finland"],
+        answer: 2,
+        fact: "Canada has more lakes than the rest of the world combined — approximately 879,800 lakes covering over 9% of Canada's surface area. The Great Lakes alone hold 21% of the world's surface fresh water."
+      },
+      {
+        q: "The Northern Lights (Aurora Borealis) are best viewed in which region?",
+        options: ["Southern Europe", "Southeast Asia", "Arctic Circle", "Caribbean"],
+        answer: 2,
+        fact: "The Arctic Circle — especially Norway, Iceland, Finland, Sweden, and Alaska — offers the best Aurora Borealis views. The lights are caused by solar particles colliding with Earth's atmosphere 60–200 miles up."
+      }
+    ];
+
+    let currentQ = 0;
+    let score    = 0;
+    let answered = false;
+
+    function startQuiz() {
+      currentQ = 0;
+      score    = 0;
+      answered = false;
+      document.getElementById('start-screen').style.display   = 'none';
+      document.getElementById('results-screen').style.display = 'none';
+      document.getElementById('quiz-screen').style.display    = 'block';
+      renderQuestion();
+    }
+
+    function renderQuestion() {
+      answered = false;
+      const data = questions[currentQ];
+      const pct = (currentQ / questions.length) * 100;
+      document.getElementById('progress-bar').style.width = pct + '%';
+      document.getElementById('question-counter').textContent = 'Question ' + (currentQ + 1) + ' of ' + questions.length;
+      document.getElementById('score-counter').textContent = 'Score: ' + score;
+      document.getElementById('question-num').textContent  = 'Question ' + (currentQ + 1);
+      document.getElementById('question-text').textContent = data.q;
+      const grid = document.getElementById('answers-grid');
+      grid.innerHTML = '';
+      const labels = ['A', 'B', 'C', 'D'];
+      data.options.forEach(function(opt, i) {
+        const btn = document.createElement('button');
+        btn.className   = 'answer-btn';
+        btn.textContent = labels[i] + '.  ' + opt;
+        btn.onclick     = function() { selectAnswer(i); };
+        grid.appendChild(btn);
+      });
+      const fb = document.getElementById('feedback-box');
+      fb.className = 'feedback-box';
+      fb.textContent = '';
+      document.getElementById('next-btn').className = 'btn-next';
+      const nextLabel = (currentQ < questions.length - 1) ? 'Next Question →' : 'See My Results 🏆';
+      document.getElementById('next-btn').textContent = nextLabel;
+    }
+
+    function selectAnswer(chosen) {
+      if (answered) return;
+      answered = true;
+      const data    = questions[currentQ];
+      const correct = data.answer;
+      const buttons = document.querySelectorAll('.answer-btn');
+      buttons.forEach(function(btn, i) {
+        btn.disabled = true;
+        if (i === correct)           btn.classList.add('correct');
+        if (i === chosen && i !== correct) btn.classList.add('incorrect');
+      });
+      const fb = document.getElementById('feedback-box');
+      if (chosen === correct) {
+        score++;
+        document.getElementById('score-counter').textContent = 'Score: ' + score;
+        fb.className   = 'feedback-box correct show';
+        fb.innerHTML   = '✅ <strong>Correct!</strong> ' + data.fact;
+      } else {
+        fb.className   = 'feedback-box incorrect show';
+        fb.innerHTML   = '❌ <strong>Not quite.</strong> The answer is <strong>' + data.options[correct] + '</strong>. ' + data.fact;
+      }
+      document.getElementById('next-btn').className = 'btn-next show';
+    }
+
+    function nextQuestion() {
+      currentQ++;
+      if (currentQ < questions.length) {
+        renderQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+      document.getElementById('progress-bar').style.width = '100%';
+      document.getElementById('quiz-screen').style.display    = 'none';
+      document.getElementById('results-screen').style.display = 'block';
+      const pct    = (score / questions.length) * 100;
+      const badge  = document.getElementById('grade-badge');
+      const icon   = document.getElementById('results-icon');
+      const summary = document.getElementById('results-summary');
+      document.getElementById('final-score').textContent = score + ' / ' + questions.length;
+      let grade, gradeClass, msg, emoji;
+      if (pct >= 90) {
+        grade = '⭐ World Traveler!'; gradeClass = 'grade-A'; emoji = '🏆';
+        msg = "Incredible! You clearly have a passion for exploring the world. With geography knowledge like that, you could probably navigate without Google Maps.";
+      } else if (pct >= 70) {
+        grade = '✈️ Seasoned Explorer'; gradeClass = 'grade-B'; emoji = '✈️';
+        msg = "Great job! You know your way around the globe. A few more stamp in that passport and you'll be a true world traveler.";
+      } else if (pct >= 50) {
+        grade = '🗺️ Budding Adventurer'; gradeClass = 'grade-C'; emoji = '🗺️';
+        msg = "Not bad! You've got a solid foundation. Keep exploring — both the world and the trivia books — and you'll be ready for the big adventure.";
+      } else {
+        grade = '🌱 Passport Pending'; gradeClass = 'grade-D'; emoji = '🌱';
+        msg = "Everyone starts somewhere! The world is big and there's so much to learn. Check out the Travel page for some inspiration, then try again!";
+      }
+      badge.textContent = grade;
+      badge.className   = 'grade-badge ' + gradeClass;
+      icon.textContent  = emoji;
+      summary.innerHTML = '📊 You answered <strong>' + score + ' out of ' + questions.length + '</strong> questions correctly (' + Math.round(pct) + '%).<br><br>' + msg;
+    }
+
+    function restartQuiz() {
+      startQuiz();
+    }
+  </script>
+
+</body>
+</html>
